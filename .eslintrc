@@ -9,6 +9,12 @@
     "sourceType": "module"
   },
   "rules": {
+    "allowAfterThis": false,
+    "allowAfterSuper": false,
+    "allowAfterThisConstructor": false,
+    "enforceInMethodNames": false,
+    "enforceInClassFields": false,
+    "allowFunctionParams": true,
     "no-underscore-dangle": ["error", {
       "allow": ["_id"]
     }]
