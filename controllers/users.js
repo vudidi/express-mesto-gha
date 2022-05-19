@@ -10,9 +10,7 @@ const getUsers = (_, res, next) => {
     .then((users) => {
       res.status(200).send(users);
     })
-    .catch(() => {
-      return next(new ServerError('Произошла ошибка'));
-    });
+    .catch(() => next(new ServerError('Произошла ошибка')));
 };
 
 const createUser = (req, res, next) => {
@@ -28,8 +26,8 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            `Переданы некорректные данные при создании пользователя: ${fields}`
-          )
+            `Переданы некорректные данные при создании пользователя: ${fields}`,
+          ),
         );
       }
       next(new ServerError('Произошла ошибка'));
@@ -58,7 +56,7 @@ const updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (!user) {
@@ -72,8 +70,8 @@ const updateProfile = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(
           new BadRequestError(
-            `Переданы некорректные данные при обновлении пользователя: ${fields}`
-          )
+            `Переданы некорректные данные при обновлении пользователя: ${fields}`,
+          ),
         );
       }
 
@@ -87,7 +85,7 @@ const updateUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (!user) {

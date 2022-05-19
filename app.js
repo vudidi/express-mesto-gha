@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const userRouter = require('./routes/users.js');
-const cardRouter = require('./routes/cards.js');
-const { errorHandler } = require('./utils/errorHandler.js');
-const { pageNotFound } = require('./utils/pageNotFound.js');
+const userRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
+const { errorHandler } = require('./utils/errorHandler');
+const { pageNotFound } = require('./utils/pageNotFound');
 
 const app = express();
 const { PORT = 3000 } = process.env;
