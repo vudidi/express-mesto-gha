@@ -19,8 +19,8 @@ const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then(() => {
-      res.status(201).send({ message: 'Пользователь успешно создан!' });
+    .then((user) => {
+      res.status(201).send({ data: user });
     })
     .catch((err) => {
       const fields = Object.keys(err.errors).join(', ');
@@ -44,7 +44,10 @@ const getUser = (req, res, next) => {
       }
       res.status(200).send({ data: user });
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Некорректный id пользователя'));
+      }
       next(new ServerError('Произошла ошибка'));
     });
 };
@@ -61,7 +64,7 @@ const updateProfile = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Запрашиваемый пользователь не найден.'));
       }
-      res.status(201).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       const fields = Object.keys(err.errors).join(', ');
@@ -90,7 +93,7 @@ const updateUserAvatar = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Запрашиваемый пользователь не найден.'));
       }
-      res.status(201).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

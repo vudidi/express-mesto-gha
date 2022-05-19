@@ -3,9 +3,10 @@
 ##### АПИ проекта Mesto. Ссылка на фронтенд проекта https://github.com/vudidi/react-mesto-auth #####
 
 ## Технологии ##
-* nodeJS
-* mongoDB
-* eslint
+* NodeJS
+* Express.js
+* MongoDB
+* Eslint
 * Webpack
 * Git
 

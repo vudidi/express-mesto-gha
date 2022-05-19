@@ -20,8 +20,8 @@ const createCard = (req, res, next) => {
   const owner = req.user._id;
   console.log(owner);
   Card.create({ name, link, owner })
-    .then(() => {
-      res.status(201).send({ message: 'Карточка успешно добавлена!' });
+    .then((card) => {
+      res.status(201).send({ data: card });
     })
     .catch((err) => {
       const fields = Object.keys(err.errors).join(', ');
@@ -45,7 +45,10 @@ const deleteCard = (req, res, next) => {
       }
       res.status(200).send({ message: 'Карточка удалена.' });
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Некорректный id карточки'));
+      }
       next(new ServerError('Произошла ошибка'));
     });
 };
@@ -60,9 +63,12 @@ const likeCard = (req, res, next) => {
       if (!card) {
         next(new NotFoundError('Карточка с указанным id не найдена.'));
       }
-      res.status(200).send(card);
+      res.status(200).send({ data: card });
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Некорректный id карточки'));
+      }
       next(new ServerError('Произошла ошибка'));
     });
 };
@@ -75,11 +81,14 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена.'));
+        return next(new NotFoundError('Карточка с указанным id не найдена.'));
       }
-      res.status(200).send(card);
+      res.status(200).send({ data: card });
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Некорректный id карточки'));
+      }
       next(new ServerError('Произошла ошибка'));
     });
 };
