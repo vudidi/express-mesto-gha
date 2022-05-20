@@ -20,9 +20,10 @@ app.use((req, _, next) => {
 });
 app.use('/', userRouter);
 app.use('/', cardRouter);
-app.use('/', errorHandler);
 app.use('*', pageNotFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });
