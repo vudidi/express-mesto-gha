@@ -2,6 +2,7 @@ const Card = require('../models/cards');
 const { BadRequestError } = require('../utils/BadRequestError');
 const { NotFoundError } = require('../utils/NotFoundError');
 const { ServerError } = require('../utils/ServerError');
+const { ForbiddenError } = require('../utils/ForbiddenError');
 
 const getCards = (_, res, next) => {
   Card.find({})
@@ -16,6 +17,7 @@ const getCards = (_, res, next) => {
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
+
   Card.create({ name, link, owner })
     .then((card) => {
       res.status(201).send({ data: card });
@@ -34,18 +36,23 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена.'));
+        return next(new NotFoundError('Карточка с указанным id не найдена.'));
       }
-      res.status(200).send({ message: 'Карточка удалена.' });
+      if (card.owner.toString() !== req.user._id) {
+        return next(new ForbiddenError('Нет доступа к удалению карточки'));
+      }
+      return Card.findByIdAndDelete(req.params.cardId).then(() => {
+        res.status(200).send({ message: 'Карточка удалена.' });
+      });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadRequestError('Некорректный id карточки'));
+        return next(new BadRequestError('Некорректный id карточки'));
       }
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 
