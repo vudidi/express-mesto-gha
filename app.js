@@ -1,9 +1,8 @@
 require('dotenv').config();
-
 const cookieParser = require('cookie-parser');
-
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
@@ -22,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', userRouter);
 app.use('/', cardRouter);
 app.use('*', pageNotFound);
+app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT, () => {
