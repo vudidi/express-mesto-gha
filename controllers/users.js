@@ -5,6 +5,7 @@ const User = require('../models/users');
 const { BadRequestError } = require('../utils/BadRequestError');
 const { NotFoundError } = require('../utils/NotFoundError');
 const { ServerError } = require('../utils/ServerError');
+const { ConflictError } = require('../utils/ConflictError');
 
 const getUsers = (_, res, next) => {
   User.find({})
@@ -14,10 +15,24 @@ const getUsers = (_, res, next) => {
     .catch(() => next(new ServerError('Произошла ошибка')));
 };
 
+const getUserById = (req, res, next) => {
+  User.findById(req.params.id)
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundError('Запрашиваемый пользователь не найден.'));
+      }
+      res.status(200).send({ data: user });
+    })
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Некорректный id пользователя'));
+      }
+      next(new ServerError('Произошла ошибка'));
+    });
+};
+
 const createUser = (req, res, next) => {
-  const {
-    email, password, name, about, avatar,
-  } = req.body;
+  const { email, password, name, about, avatar } = req.body;
 
   bcrypt.hash(password, 10).then((hash) => {
     User.create({
@@ -41,7 +56,7 @@ const createUser = (req, res, next) => {
         }
         if (err.code === 11000) {
           return next(
-            new BadRequestError('Пользователь с такой почтой уже существует'),
+            new ConflictError('Пользователь с такой почтой уже существует'),
           );
         }
 
@@ -146,4 +161,5 @@ module.exports = {
   updateProfile,
   updateUserAvatar,
   login,
+  getUserById,
 };
