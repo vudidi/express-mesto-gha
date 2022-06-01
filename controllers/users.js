@@ -7,7 +7,7 @@ const { NotFoundError } = require('../utils/NotFoundError');
 const { ServerError } = require('../utils/ServerError');
 const { ConflictError } = require('../utils/ConflictError');
 
-const getUsers = (_, res, next) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       res.status(200).send(users);
@@ -19,22 +19,20 @@ const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Запрашиваемый пользователь не найден.'));
+        return next(new NotFoundError('Запрашиваемый пользователь не найден.'));
       }
-      res.status(200).send({ data: user });
+      return res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadRequestError('Некорректный id пользователя'));
+        return next(new BadRequestError('Некорректный id пользователя'));
       }
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 
 const createUser = (req, res, next) => {
-  const {
-    email, password, name, about, avatar,
-  } = req.body;
+  const { email, password, name, about, avatar } = req.body;
 
   bcrypt.hash(password, 10).then((hash) => {
     User.create({
@@ -45,7 +43,13 @@ const createUser = (req, res, next) => {
       password: hash,
     })
       .then((user) => {
-        res.status(201).send({ data: user });
+        res.status(201).send({
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        });
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
@@ -92,15 +96,9 @@ const login = (req, res) => {
 const getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) {
-        next(new NotFoundError('Запрашиваемый пользователь не найден.'));
-      }
       res.status(200).send({ data: user });
     })
-    .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        next(new BadRequestError('Некорректный id пользователя'));
-      }
+    .catch(() => {
       next(new ServerError('Произошла ошибка'));
     });
 };
