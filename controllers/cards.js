@@ -25,13 +25,13 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
-        next(
+        return next(
           new BadRequestError(
             `Переданы некорректные данные при создании карточки: ${fields}`,
           ),
         );
       }
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 
@@ -64,15 +64,15 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена.'));
+        return next(new NotFoundError('Карточка с указанным id не найдена.'));
       }
-      res.status(200).send({ data: card });
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadRequestError('Некорректный id карточки'));
+        return next(new BadRequestError('Некорректный id карточки'));
       }
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 
@@ -90,9 +90,9 @@ const dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadRequestError('Некорректный id карточки'));
+        return next(new BadRequestError('Некорректный id карточки'));
       }
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 

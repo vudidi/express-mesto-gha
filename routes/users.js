@@ -40,33 +40,33 @@ router.get('/users', auth, getUsers);
 router.get('/users/me', auth, getUser);
 router.get(
   '/users/:id',
+  auth,
   celebrate({
     params: Joi.object().keys({
-      id: Joi.string().hex().min(24).max(24),
+      id: Joi.string().hex().length(24),
     }),
   }),
-  auth,
   getUserById,
 );
 router.patch(
   '/users/me',
+  auth,
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
     }),
   }),
-  auth,
   updateProfile,
 );
 router.patch(
   '/users/me/avatar',
+  auth,
   celebrate({
     body: Joi.object().keys({
       avatar: Joi.string().regex(RegExp(regExUrl)),
     }),
   }),
-  auth,
   updateUserAvatar,
 );
 

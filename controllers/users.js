@@ -70,10 +70,11 @@ const createUser = (req, res, next) => {
 
         return next(new ServerError('Произошла ошибка'));
       });
-  });
+  })
+    .catch(next);
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -91,7 +92,7 @@ const login = (req, res) => {
         .send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -107,7 +108,6 @@ const getUser = (req, res, next) => {
 
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
-
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
@@ -115,21 +115,21 @@ const updateProfile = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Запрашиваемый пользователь не найден.'));
+        return next(new NotFoundError('Запрашиваемый пользователь не найден.'));
       }
-      res.status(200).send({ data: user });
+      return res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(', ');
-        next(
+        return next(
           new BadRequestError(
             `Переданы некорректные данные при обновлении пользователя: ${fields}`,
           ),
         );
       }
 
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 
@@ -143,16 +143,16 @@ const updateUserAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Запрашиваемый пользователь не найден.'));
+        return next(new NotFoundError('Запрашиваемый пользователь не найден.'));
       }
-      res.status(200).send({ data: user });
+      return res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Передана некорректная ссылка'));
+        return next(new BadRequestError('Передана некорректная ссылка'));
       }
 
-      next(new ServerError('Произошла ошибка'));
+      return next(new ServerError('Произошла ошибка'));
     });
 };
 
