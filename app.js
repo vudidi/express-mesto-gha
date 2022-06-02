@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
+const auth = require('./middlewares/auth');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { errorHandler } = require('./utils/errorHandler');
@@ -20,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', userRouter);
 app.use('/', cardRouter);
-app.use('*', pageNotFound);
+app.use('*', auth, pageNotFound);
 app.use(errors());
 app.use(errorHandler);
 
