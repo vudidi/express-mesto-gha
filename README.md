@@ -22,3 +22,8 @@
 `npm install` - установить зависимости  
 `npm run start` - запустить сервер  
 `npm run dev` - запустить сервер с hot-reload  
+
+## Домен на сервере
+
+https://api.vudidi-mesto.nomoredomains.xyz
+
