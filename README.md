@@ -17,7 +17,7 @@
 
 ## Запуск проекта
 
-`https://github.com/vudidi/express-mesto-gha.git` - клонировать репозиторий
+`git clone https://github.com/vudidi/express-mesto-gha.git` - клонировать репозиторий
 
 `npm install` - установить зависимости  
 `npm run start` - запустить сервер  
